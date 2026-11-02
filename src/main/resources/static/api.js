@@ -35,8 +35,12 @@ export async function getNotes(url = "/api/notes") {
 // TODO Exercise 5: Send the CSRF token in the X-XSRF-TOKEN header
 export async function addNote(formData) {
     const response = await fetch("/api/notes", {
+        headers: {
+            "Content-Type": "application/json",
+            "X-XSRF-TOKEN": csrfToken()
+        },
         method: "POST",
-        body: new URLSearchParams(formData)
+        body: JSON.stringify({text: formData.get("text")}),
     });
 
     if (!response.ok) {
@@ -48,6 +52,8 @@ export async function addNote(formData) {
 function csrfToken() {
     // TODO Exercise 5:
     // Read XSRF-TOKEN from document.cookie
+    const TOKEN = document.cookie.match(/XSRF-TOKEN=([^;]+)/)
     // Decode the value
     // Return the token
+    return TOKEN ? decodeURIComponent(TOKEN[1]) : null;
 }
